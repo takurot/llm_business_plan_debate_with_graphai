@@ -1,4 +1,4 @@
-# llm_business_plan_debate_with_graphai (LLM Debate Business Plan Generator)
+# LLM Debate Business Plan Generator
 
 This project utilizes tools from the GraphAI GitHub repository and OpenAI's GPT models to create an application where specified LLMs debate and develop a business plan on a specified theme. The final business plan is output in Markdown format.
 
