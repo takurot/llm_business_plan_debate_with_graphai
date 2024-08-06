@@ -1,8 +1,9 @@
+import argparse
 import openai
 import graphai
-from markdown2 import markdown
+import markdown2
 
-openai.api_key = 'your_openai_api_key' # replace with your OpenAI API key
+openai.api_key = 'your_openai_api_key'
 
 def get_llm_response(prompt, role):
     response = openai.Completion.create(
@@ -53,16 +54,65 @@ def generate_business_plan(history, theme):
         business_plan += f"## {role}\n\n{response}\n\n"
     return business_plan
 
+def deepen_ideas(business_plan_path):
+    with open(business_plan_path, 'r') as file:
+        business_plan = file.read()
+
+    plan_sections = business_plan.split('## ')
+    role = "LLM_A"
+    
+    for section in plan_sections[1:]:  # Skip the title section
+        title, content = section.split('\n', 1)
+        prompt = f"Based on the section '{title.strip()}', provide more detailed ideas and improvements:\n\n{content.strip()}"
+        response = get_llm_response(prompt, role)
+        print(f"Deepened ideas for section '{title.strip()}': {response}\n")
+        
+        business_plan += f"\n### Deepened ideas for {title.strip()}\n\n{response}\n"
+
+    return business_plan
+
+def main(args):
+    if args.file:
+        deepened_business_plan = deepen_ideas(args.file)
+        
+        # Output deepened business plan in markdown format
+        deepened_business_plan_path = "deepened_business_plan.md"
+        with open(deepened_business_plan_path, "w") as file:
+            file.write(markdown2.markdown(deepened_business_plan))
+        
+        print("Deepened business plan generated and saved as 'deepened_business_plan.md'")
+    
+    elif args.theme:
+        iterations = args.iterations if args.iterations else 5
+        debate_history = debate_on_theme(args.theme, iterations)
+        visualize_debate(debate_history)
+        
+        business_plan = generate_business_plan(debate_history, args.theme)
+        
+        # Output initial business plan in markdown format
+        business_plan_path = "business_plan.md"
+        with open(business_plan_path, "w") as file:
+            file.write(markdown2.markdown(business_plan))
+        
+        print("Initial business plan generated and saved as 'business_plan.md'")
+        
+        # Deepen ideas based on the generated business plan
+        deepened_business_plan = deepen_ideas(business_plan_path)
+        
+        # Output deepened business plan in markdown format
+        deepened_business_plan_path = "deepened_business_plan.md"
+        with open(deepened_business_plan_path, "w") as file:
+            file.write(markdown2.markdown(deepened_business_plan))
+        
+        print("Deepened business plan generated and saved as 'deepened_business_plan.md'")
+    else:
+        print("Please provide either a theme or a file path for business plan.")
+
 if __name__ == "__main__":
-    theme = "Sustainable Energy Solutions" # change the theme to your desired business idea
-    iterations = 5  # number of iterations for the debate, increase number to deepen the debate
-    debate_history = debate_on_theme(theme, iterations)
-    visualize_debate(debate_history)
+    parser = argparse.ArgumentParser(description="LLM Debate Business Plan Generator")
+    parser.add_argument('--theme', type=str, help='The theme for the business plan')
+    parser.add_argument('--file', type=str, help='Path to an existing business plan file to deepen ideas')
+    parser.add_argument('--iterations', type=int, default=5, help='Number of debate iterations (default: 5)')
     
-    business_plan = generate_business_plan(debate_history, theme)
-    
-    # Output business plan in markdown format
-    with open("business_plan.md", "w") as file:
-        file.write(markdown(business_plan))
-    
-    print("Business plan generated and saved as 'business_plan.md'")
+    args = parser.parse_args()
+    main(args)

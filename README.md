@@ -28,34 +28,46 @@ This project utilizes tools from the GraphAI GitHub repository and OpenAI's GPT 
 
 2. **Run the Script**: Execute the script to generate a business plan.
     ```bash
-    python llm_debate_business_plan.py
+    python llm_debate_business_plan.py --theme "Your Theme" --iterations 10
     ```
 
-### Script Parameters
+### Command-line Arguments
 
-- **Theme**: The theme for the business plan. This can be set in the script (default is "Sustainable Energy Solutions").
-- **Iterations**: The number of debate iterations between the LLMs. This can also be set in the script (default is 5).
+- **--theme**: The theme for the business plan. Use this to start a debate from a keyword.
+- **--file**: Path to an existing business plan file to deepen ideas.
+- **--iterations**: Number of debate iterations. Default is 5.
+
+### Examples
+
+1. **Start a new debate with a specific theme**:
+    ```bash
+    python llm_debate_business_plan.py --theme "Sustainable Energy Solutions" --iterations 10
+    ```
+
+2. **Deepen ideas from an existing business plan file**:
+    ```bash
+    python llm_debate_business_plan.py --file "business_plan.md"
+    ```
 
 ### Output
 
 - **Debate Visualization**: The debate process is visualized using GraphAI tools.
-- **Business Plan**: The final business plan is saved as a Markdown file named `business_plan.md`.
+- **Business Plan**: The initial business plan and the deepened business plan are saved as Markdown files.
 
 ## Example
 
 1. **Set the Theme and Iterations**:
-    ```python
-    theme = "Sustainable Energy Solutions"
-    iterations = 5
+    ```bash
+    python llm_debate_business_plan.py --theme "Sustainable Energy Solutions" --iterations 5
     ```
 
 2. **Run the Script**:
     ```bash
-    python llm_debate_business_plan.py
+    python llm_debate_business_plan.py --theme "Sustainable Energy Solutions" --iterations 5
     ```
 
 3. **Generated Business Plan**:
-    The business plan will be saved as `business_plan.md` in the current directory.
+    The business plan will be saved as `business_plan.md` and the deepened business plan will be saved as `deepened_business_plan.md` in the current directory.
 
 ## Code Explanation
 
@@ -65,10 +77,12 @@ This project utilizes tools from the GraphAI GitHub repository and OpenAI's GPT 
 2. **debate_on_theme(theme, iterations)**: Initializes the debate with a given theme and iterates the debate between two LLMs.
 3. **visualize_debate(history)**: Uses GraphAI tools to create and visualize the debate graphically.
 4. **generate_business_plan(history, theme)**: Generates a business plan from the debate history in Markdown format.
+5. **deepen_ideas(business_plan_path)**: Reads an existing business plan and generates deeper ideas and improvements for each section.
 
 ### Main Execution
 
 - The main block of the script sets the theme and iterations, runs the debate, visualizes it, and generates the business plan.
+- If an existing business plan file is provided, it reads the file and deepens the ideas within it.
 
 ## License
 
