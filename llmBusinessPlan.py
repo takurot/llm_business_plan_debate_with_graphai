@@ -1,6 +1,5 @@
 import argparse
 import openai
-import graphai
 import markdown2
 
 openai.api_key = 'your_openai_api_key'
@@ -37,16 +36,6 @@ def debate_on_theme(theme, iterations):
             debate_history.append((role_b, response_b))
 
     return debate_history
-
-def visualize_debate(history):
-    # Use GraphAI tools to visualize the debate
-    graph = graphai.Graph()
-    for idx, (role, response) in enumerate(history):
-        graph.add_node(f"{role}_{idx}", label=response)
-        if idx > 0:
-            graph.add_edge(f"{role}_{idx-1}", f"{role}_{idx}")
-
-    graph.visualize()
 
 def generate_business_plan(history, theme):
     business_plan = f"# Business Plan for {theme}\n\n"
@@ -85,7 +74,6 @@ def main(args):
     elif args.theme:
         iterations = args.iterations if args.iterations else 5
         debate_history = debate_on_theme(args.theme, iterations)
-        visualize_debate(debate_history)
         
         business_plan = generate_business_plan(debate_history, args.theme)
         
