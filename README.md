@@ -40,7 +40,7 @@ This project utilizes OpenAI's GPT models to create an application where specifi
 
 2. **Deepen ideas from an existing business plan file**:
     ```bash
-    python llm_debate_business_plan.py --file "business_plan.md"
+    python llm_debate_business_plan.py --file "business_plan.md" --iterations 5
     ```
 
 ### Output
@@ -69,7 +69,7 @@ This project utilizes OpenAI's GPT models to create an application where specifi
 1. **get_llm_response(prompt, role)**: Interacts with the OpenAI API to get responses from the LLMs based on the prompt and role.
 2. **debate_on_theme(theme, iterations)**: Initializes the debate with a given theme and iterates the debate between two LLMs.
 3. **generate_business_plan(history, theme)**: Generates a business plan from the debate history in Markdown format.
-4. **deepen_ideas(business_plan_path)**: Reads an existing business plan and generates deeper ideas and improvements for each section.
+4. **deepen_ideas(business_plan_content, iterations)**: Reads an existing business plan and generates deeper ideas and improvements for each section, iterating the debate process.
 
 ### Main Execution
 

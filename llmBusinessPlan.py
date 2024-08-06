@@ -43,31 +43,43 @@ def generate_business_plan(history, theme):
         business_plan += f"## {role}\n\n{response}\n\n"
     return business_plan
 
-def deepen_ideas(business_plan_path):
-    with open(business_plan_path, 'r') as file:
-        business_plan = file.read()
-
-    plan_sections = business_plan.split('## ')
+def deepen_ideas(business_plan_content, iterations):
+    plan_sections = business_plan_content.split('## ')
     role = "LLM_A"
-    
+    debate_history = []
+
     for section in plan_sections[1:]:  # Skip the title section
         title, content = section.split('\n', 1)
         prompt = f"Based on the section '{title.strip()}', provide more detailed ideas and improvements:\n\n{content.strip()}"
         response = get_llm_response(prompt, role)
-        print(f"Deepened ideas for section '{title.strip()}': {response}\n")
-        
-        business_plan += f"\n### Deepened ideas for {title.strip()}\n\n{response}\n"
+        debate_history.append((role, response))
 
-    return business_plan
+        for i in range(iterations):
+            if i % 2 == 0:
+                response_a = get_llm_response(response, role)
+                debate_history.append((role, response_a))
+            else:
+                response_b = get_llm_response(response_a, role)
+                debate_history.append((role, response_b))
+
+            response = response_b if i % 2 == 0 else response_a
+
+        business_plan_content += f"\n### Deepened ideas for {title.strip()}\n\n{response}\n"
+
+    return business_plan_content
 
 def main(args):
     if args.file:
-        deepened_business_plan = deepen_ideas(args.file)
+        with open(args.file, 'r') as file:
+            business_plan_content = file.read()
+        
+        iterations = args.iterations if args.iterations else 5
+        deepened_business_plan_content = deepen_ideas(business_plan_content, iterations)
         
         # Output deepened business plan in markdown format
         deepened_business_plan_path = "deepened_business_plan.md"
         with open(deepened_business_plan_path, "w") as file:
-            file.write(markdown2.markdown(deepened_business_plan))
+            file.write(markdown2.markdown(deepened_business_plan_content))
         
         print("Deepened business plan generated and saved as 'deepened_business_plan.md'")
     
@@ -75,22 +87,22 @@ def main(args):
         iterations = args.iterations if args.iterations else 5
         debate_history = debate_on_theme(args.theme, iterations)
         
-        business_plan = generate_business_plan(debate_history, args.theme)
+        business_plan_content = generate_business_plan(debate_history, args.theme)
         
         # Output initial business plan in markdown format
         business_plan_path = "business_plan.md"
         with open(business_plan_path, "w") as file:
-            file.write(markdown2.markdown(business_plan))
+            file.write(markdown2.markdown(business_plan_content))
         
         print("Initial business plan generated and saved as 'business_plan.md'")
         
         # Deepen ideas based on the generated business plan
-        deepened_business_plan = deepen_ideas(business_plan_path)
+        deepened_business_plan_content = deepen_ideas(business_plan_content, iterations)
         
         # Output deepened business plan in markdown format
         deepened_business_plan_path = "deepened_business_plan.md"
         with open(deepened_business_plan_path, "w") as file:
-            file.write(markdown2.markdown(deepened_business_plan))
+            file.write(markdown2.markdown(deepened_business_plan_content))
         
         print("Deepened business plan generated and saved as 'deepened_business_plan.md'")
     else:
